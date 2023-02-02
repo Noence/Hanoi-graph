@@ -37,45 +37,37 @@ class HanoiTower:
             for second in self.graph.nodes:
                 self.num_diff_let(first, second)
                 if len(self.diff) == 1:
-                    first_lst = re.findall(".", first)
-                    second_lst = re.findall(".", second)
+                    first_lst = re.findall('.', first)
+                    second_lst = re.findall('.', second)
 
-                    if self.idx[0] == 2:
-                        self.graph.add_edge(first, second)
-                    else:
-                        i = 0
-                        for num in first_lst:
-                            if (num not in (first_lst[i + 1:])) and (second[i] != num) and (
-                                    second[i] not in (second_lst[i + 1:])):
-                                self.graph.add_edge(first, second)
-                            i += 1
+                    i = 0
+                    for num in first_lst:
+                        if (num not in (first_lst[i + 1:])) and (second[i] != num) and (
+                                second[i] not in (second_lst[i + 1:])):
+                            self.graph.add_edge(first, second)
+                        i += 1
         self.plot_tower()
 
     def plot_tower(self):
         pos = nx.spring_layout(self.graph)
+        # nx.draw_networkx_nodes(
+        #     self.graph,
+        #     pos,
+        #     node_size=500,
+        #     node_color="white",
+        #     linewidths=1,
+        #     edgecolors="black",
+        #
+        # )
+        # nx.draw_networkx_labels(
+        #     self.graph,
+        #     pos,
+        #     font_size=16,
+        #     font_family="sans-serif",
+        # )
         nx.draw(self.graph, pos, with_labels=True)
         plt.show()
 
 
-# graph_maker(3,3)
-# nx.draw_networkx_nodes(
-#     graph,
-#     pos,
-#     node_size=500,
-#     node_color="white",
-#     linewidths=1,
-#     edgecolors="black",
-#
-# )
-# nx.draw_networkx_labels(
-#     graph,
-#     pos,
-#     font_size=16,
-#     font_family="sans-serif",
-# )
-# nx.draw(graph, pos, with_labels=True)
-# plt.show()
-
-
-test = HanoiTower(3, 3)
+test = HanoiTower(6, 3)
 test.create_tower()
