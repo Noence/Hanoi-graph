@@ -3,52 +3,61 @@ import matplotlib.pyplot as plt
 from itertools import product
 import re
 
-def num_diff_let(a, b):
-    u = zip(a, b)
 
-    diff = []
-    idx = []
-    for i, j in u:
-        if i == j:
-            continue
-        else:
-            diff.append(j)
-            idx = [a.index(i), b.index(j)]
+class HanoiTower:
+    def __init__(self, disks, towers):
+        self.disks = disks
+        self.towers = towers
+        self.disk_names = self.disk_names()
+        self.nodes = product(self.disk_names, repeat=self.towers)
+        self.graph = nx.Graph()
+        self.diff = []
+        self.idx = []
 
-    return diff, idx
+    def disk_names(self):
+        names = ''.join(map(str, list(range(1, self.disks + 1))))
+        return names
+
+    def num_diff_let(self, a, b):
+        u = zip(a, b)
+
+        self.diff = []
+        self.idx = []
+        for i, j in u:
+            if i == j:
+                continue
+            else:
+                self.diff.append(j)
+                self.idx = [a.index(i), b.index(j)]
+
+    def create_tower(self):
+        for node in self.nodes:
+            self.graph.add_node(''.join(node), room=1500)
+        for first in self.graph.nodes:
+            for second in self.graph.nodes:
+                self.num_diff_let(first, second)
+                if len(self.diff) == 1:
+                    first_lst = re.findall(".", first)
+                    second_lst = re.findall(".", second)
+
+                    if self.idx[0] == 2:
+                        self.graph.add_edge(first, second)
+                    else:
+                        i = 0
+                        for num in first_lst:
+                            if (num not in (first_lst[i + 1:])) and (second[i] != num) and (
+                                    second[i] not in (second_lst[i + 1:])):
+                                self.graph.add_edge(first, second)
+                            i += 1
+        self.plot_tower()
+
+    def plot_tower(self):
+        pos = nx.spring_layout(self.graph)
+        nx.draw(self.graph, pos, with_labels=True)
+        plt.show()
 
 
-def graph_maker():
-    rm = []
-    nodes = product('123', repeat=3)
-    graph = nx.Graph()
-    for node in nodes:
-        name = f"{node[0]}{node[1]}{node[2]}"
-        graph.add_node(name, room=1500)
-    for first in graph.nodes:
-        for second in graph.nodes:
-            diff, idx = num_diff_let(first, second)
-            if len(diff) == 1:
-                first_lst = re.findall(".", first)
-                second_lst = re.findall(".", second)
-
-                if idx[0] == 2:
-                    graph.add_edge(first, second)
-                    rm.append((second, first))
-                else:
-                    i = 0
-                    for num in first_lst:
-                        if (num not in (first_lst[i + 1:])) and (second[i] != num) and (second[i] not in (second_lst[i + 1:])):
-                            graph.add_edge(first, second)
-                            rm.append((second, first))
-                        i += 1
-
-
-    pos = nx.spring_layout(graph)
-    nx.draw(graph, pos, with_labels=True)
-    plt.show()
-
-graph_maker()
+# graph_maker(3,3)
 # nx.draw_networkx_nodes(
 #     graph,
 #     pos,
@@ -66,3 +75,7 @@ graph_maker()
 # )
 # nx.draw(graph, pos, with_labels=True)
 # plt.show()
+
+
+test = HanoiTower(3, 3)
+test.create_tower()
