@@ -10,9 +10,13 @@ class HanoiTower:
         self.towers = towers
         self.disk_names = self.disk_names()
         self.nodes = product(self.disk_names, repeat=self.towers)
+        print(list(self.nodes))
         self.graph = nx.Graph()
         self.diff = []
         self.idx = []
+        self.node_color_map = []
+        self.edge_color_map = []
+
 
     def disk_names(self):
         names = ''.join(map(str, list(range(1, self.disks + 1))))
@@ -46,7 +50,27 @@ class HanoiTower:
                                 second[i] not in (second_lst[i + 1:])):
                             self.graph.add_edge(first, second)
                         i += 1
+        self.find_shortest_path()
         self.plot_tower()
+
+    def find_shortest_path(self):
+        short_path_nodes = nx.shortest_path(self.graph, '111', '333')
+        i = 0
+        short_path_edges = []
+        while i < len(short_path_nodes)-1:
+            short_path_edges.append((short_path_nodes[i], short_path_nodes[i + 1]))
+            short_path_edges.append((short_path_nodes[i+1], short_path_nodes[i]))
+            i += 1
+        for node in self.graph:
+            if node in short_path_nodes:
+                self.node_color_map.append('green')
+            else:
+                self.node_color_map.append('grey')
+        for edge in self.graph.edges:
+            if edge in short_path_edges:
+                self.edge_color_map.append("green")
+            else:
+                self.edge_color_map.append('grey')
 
     def plot_tower(self):
         pos = nx.spring_layout(self.graph)
@@ -65,9 +89,9 @@ class HanoiTower:
         #     font_size=16,
         #     font_family="sans-serif",
         # )
-        nx.draw(self.graph, pos, with_labels=True)
+        nx.draw(self.graph, pos, node_color=self.node_color_map, edge_color=self.edge_color_map, with_labels=True)
         plt.show()
 
 
-test = HanoiTower(6, 3)
+test = HanoiTower(5, 3)
 test.create_tower()
