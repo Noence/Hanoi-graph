@@ -5,21 +5,26 @@ import re
 
 
 class HanoiTower:
-    def __init__(self, disks, towers):
+    def __init__(self, disks, towers, start, end):
         self.disks = disks
         self.towers = towers
+        self.nums = []
         self.disk_names = self.disk_names()
-        self.nodes = product(self.disk_names, repeat=self.towers)
-        print(list(self.nodes))
+        self.nodes = product(self.nums, repeat=len(self.disk_names))
         self.graph = nx.Graph()
+        self.start = start
+        self.end = end
         self.diff = []
         self.idx = []
         self.node_color_map = []
         self.edge_color_map = []
-
+        self.edge_width = []
+        self.short_path_edges = []
+        self.short_path_nodes =[]
 
     def disk_names(self):
         names = ''.join(map(str, list(range(1, self.disks + 1))))
+        self.nums = ''.join(map(str, list(range(1, self.towers + 1))))
         return names
 
     def num_diff_let(self, a, b):
@@ -51,47 +56,50 @@ class HanoiTower:
                             self.graph.add_edge(first, second)
                         i += 1
         self.find_shortest_path()
-        self.plot_tower()
 
     def find_shortest_path(self):
-        short_path_nodes = nx.shortest_path(self.graph, '111', '333')
+        self.short_path_nodes = nx.shortest_path(self.graph, self.start, self.end)
         i = 0
-        short_path_edges = []
-        while i < len(short_path_nodes)-1:
-            short_path_edges.append((short_path_nodes[i], short_path_nodes[i + 1]))
-            short_path_edges.append((short_path_nodes[i+1], short_path_nodes[i]))
+        while i < len(self.short_path_nodes)-1:
+            if i == 0:
+                self.short_path_edges.append(('start', self.short_path_nodes[i + 1]))
+                self.short_path_edges.append((self.short_path_nodes[i + 1], 'start'))
+            elif i == len(self.short_path_nodes)-2:
+                self.short_path_edges.append((self.short_path_nodes[i], 'end'))
+                self.short_path_edges.append(('end', self.short_path_nodes[i]))
+            else:
+                self.short_path_edges.append((self.short_path_nodes[i], self.short_path_nodes[i + 1]))
+                self.short_path_edges.append((self.short_path_nodes[i+1], self.short_path_nodes[i]))
             i += 1
-        for node in self.graph:
-            if node in short_path_nodes:
+        for node in self.short_path_nodes:
+            if node == self.end:
+                self.node_color_map.append('red')
+                self.short_path_nodes[-1] = 'end'
+            elif node == self.start:
                 self.node_color_map.append('green')
-            else:
-                self.node_color_map.append('grey')
+                self.short_path_nodes[0] = 'start'
+            elif node in self.short_path_nodes:
+                self.node_color_map.append('orange')
+
         for edge in self.graph.edges:
-            if edge in short_path_edges:
+            if edge in self.short_path_edges:
                 self.edge_color_map.append("green")
-            else:
-                self.edge_color_map.append('grey')
+        self.graph = nx.relabel_nodes(self.graph, {self.start: 'start', self.end: 'end'})
+        self.plot_tower()
 
     def plot_tower(self):
-        pos = nx.spring_layout(self.graph)
-        # nx.draw_networkx_nodes(
-        #     self.graph,
-        #     pos,
-        #     node_size=500,
-        #     node_color="white",
-        #     linewidths=1,
-        #     edgecolors="black",
-        #
-        # )
-        # nx.draw_networkx_labels(
-        #     self.graph,
-        #     pos,
-        #     font_size=16,
-        #     font_family="sans-serif",
-        # )
-        nx.draw(self.graph, pos, node_color=self.node_color_map, edge_color=self.edge_color_map, with_labels=True)
+        pos = nx.spring_layout(self.graph, iterations=1000)
+        nx.draw_networkx_labels(
+            self.graph,
+            pos,
+            font_size=8,
+            font_family="sans-serif",
+        )
+        nx.draw(self.graph, pos, with_labels=False, node_color="grey", edge_color="grey")
+        nx.draw(self.graph, pos, nodelist=self.short_path_nodes, node_color=self.node_color_map,
+                edgelist=self.short_path_edges, edge_color="green", width=3)
         plt.show()
 
 
-test = HanoiTower(5, 3)
+test = HanoiTower(3, 3, '111', '333')
 test.create_tower()
