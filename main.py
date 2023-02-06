@@ -122,13 +122,17 @@ class HanoiTower:
         # plt.savefig("3_4")
 
     def get_metrics(self):
-        print(len(self.short_path_nodes))
-        # print(nx.adjacency_matrix(self.graph))
-        # print(nx.to_pandas_adjacency(self.graph))
+        # print(len(self.short_path_nodes))
+        # adjacency_matrix = nx.to_pandas_adjacency(self.graph)
+        # adjacency_matrix = adjacency_matrix.replace([0.0], '0', regex=True)
+        # adjacency_matrix = adjacency_matrix.replace([1.0], '1', regex=True)
+        # print(adjacency_matrix.to_latex())
         # print(nx.incidence_matrix(self.graph))
-        # print(nx.eigenvector_centrality(self.graph))
-        print(nx.is_eulerian(self.graph))
-
+        # print(nx.to_pandas_edgelist(self.graph))
+        eig_cent = nx.eigenvector_centrality(self.graph)
+        eig_cent_sorted = sorted(eig_cent.items(), key=lambda x:x[1], reverse=True)
+        print(eig_cent_sorted)
+        # print(nx.is_eulerian(self.graph))
 
 
 # Q = HanoiTower(6, 3, '111111', '333333')
