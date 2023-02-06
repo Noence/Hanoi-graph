@@ -20,7 +20,7 @@ class HanoiTower:
         self.edge_color_map = []
         self.edge_width = []
         self.short_path_edges = []
-        self.short_path_nodes =[]
+        self.short_path_nodes = []
 
     def disk_names(self):
         names = ''.join(map(str, list(range(1, self.disks + 1))))
@@ -88,21 +88,25 @@ class HanoiTower:
         self.plot_tower()
 
     def plot_tower(self):
-        pos = nx.spring_layout(self.graph, iterations=100)
-        # pos = nx.circular_layout(self.graph)
-        fig = plt.figure(1, figsize=(50, 50), dpi=60)
+        iter_graph = 10000
+        size = 400
+        if self.disks == 6:
+            fig = plt.figure(1, figsize=(50, 50), dpi=60)
+            size = 700
+            iter_graph = 100
+        pos = nx.spring_layout(self.graph, iterations=iter_graph)
         nx.draw_networkx_labels(
             self.graph,
             pos,
-            font_size=10,
+            font_size=8,
             font_family="sans-serif",
         )
-        nx.draw(self.graph, pos, with_labels=False, node_color="grey", edge_color="grey", node_size=700)
+        nx.draw(self.graph, pos, with_labels=False, node_color="grey", edge_color="grey", node_size=size)
         nx.draw(self.graph, pos, nodelist=self.short_path_nodes, node_color=self.node_color_map,
-                edgelist=self.short_path_edges, edge_color="green", width=3, node_size=700)
+                edgelist=self.short_path_edges, edge_color="green", width=3, node_size=size)
         plt.show()
-        # plt.savefig("6_6.png")
 
 
-test = HanoiTower(6, 3, '111111', '333333')
+# test = HanoiTower(6, 3, '111111', '333333')
+test = HanoiTower(3, 3, '111', '333')
 test.create_tower()
