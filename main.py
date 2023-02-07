@@ -100,7 +100,7 @@ class HanoiTower:
         if self.disks == 6:
             fig = plt.figure(1, figsize=(50, 50), dpi=60)
             size = 700
-            iter_graph = 50
+            iter_graph = 10000
             print("CREATING GRAPH...")
             pos = nx.spring_layout(self.graph, iterations=iter_graph)
         elif self.towers == 4:
@@ -135,11 +135,11 @@ class HanoiTower:
         # print(nx.is_eulerian(self.graph))
 
 
-# Q = HanoiTower(6, 3, '111111', '333333')
-Q = HanoiTower(3, 3, '111', '333')
+Q = HanoiTower(6, 3, '111111', '333333')
+# Q = HanoiTower(3, 3, '111', '333')
 # Q = HanoiTower(3, 4, '111', '444')
 # Q = HanoiTower(6, 4, '133122', '333333')
 
 
-Q.create_tower(shortest_path=True, plot_diagram=False)
+Q.create_tower(shortest_path=True, plot_diagram=True)
 Q.get_metrics()
