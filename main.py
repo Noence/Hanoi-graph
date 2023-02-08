@@ -95,20 +95,18 @@ class HanoiTower:
             self.plot_tower()
 
     def plot_tower(self):
-        iter_graph = 10000
         size = 400
         if self.disks == 6:
             fig = plt.figure(1, figsize=(50, 50), dpi=60)
             size = 700
-            iter_graph = 10000
             print("CREATING GRAPH...")
-            pos = nx.spring_layout(self.graph, iterations=iter_graph)
+            pos = nx.kamada_kawai_layout(self.graph)
         elif self.towers == 4:
             fig = plt.figure(1, figsize=(15, 15), dpi=60)
             size = 600
             pos = nx.circular_layout(self.graph)
         else:
-            pos = nx.spring_layout(self.graph, iterations=iter_graph)
+            pos = nx.kamada_kawai_layout(self.graph)
         nx.draw_networkx_labels(
             self.graph,
             pos,
@@ -119,27 +117,34 @@ class HanoiTower:
         nx.draw(self.graph, pos, nodelist=self.short_path_nodes, node_color=self.node_color_map,
                 edgelist=self.short_path_edges, edge_color="green", width=3, node_size=size)
         plt.show()
-        # plt.savefig("3_4")
 
     def get_metrics(self):
-        # print(len(self.short_path_nodes))
-        # adjacency_matrix = nx.to_pandas_adjacency(self.graph)
-        # adjacency_matrix = adjacency_matrix.replace([0.0], '0', regex=True)
-        # adjacency_matrix = adjacency_matrix.replace([1.0], '1', regex=True)
-        # print(adjacency_matrix.to_latex())
-        # print(nx.incidence_matrix(self.graph))
-        # print(nx.to_pandas_edgelist(self.graph))
+        shortest_path = len(self.short_path_nodes)
+        adjacency_matrix = nx.to_pandas_adjacency(self.graph)
+        adjacency_matrix = self.cleanup_matrix(adjacency_matrix)
+        incidence_matrix = nx.incidence_matrix(self.graph).todense()
+        incidence_matrix = self.cleanup_matrix(pd.DataFrame(incidence_matrix))
         eig_cent = nx.eigenvector_centrality(self.graph)
         eig_cent_sorted = sorted(eig_cent.items(), key=lambda x:x[1], reverse=True)
-        print(eig_cent_sorted)
-        # print(nx.is_eulerian(self.graph))
+        eulerian = nx.is_eulerian(self.graph)
+        return shortest_path, adjacency_matrix, incidence_matrix, eig_cent_sorted, eulerian
+
+    def cleanup_matrix(self, mat):
+        mat_clean = mat.replace([0.0], '0', regex=True)
+        mat_clean = mat_clean.replace([1.0], '1', regex=True)
+        mat_clean = mat_clean.style.to_latex()
+
+        return mat_clean
 
 
-Q = HanoiTower(6, 3, '111111', '333333')
+# Q = HanoiTower(6, 3, '111111', '333333')
 # Q = HanoiTower(3, 3, '111', '333')
 # Q = HanoiTower(3, 4, '111', '444')
 # Q = HanoiTower(6, 4, '133122', '333333')
+Q = HanoiTower(6, 3, '133122', '333333')
 
 
 Q.create_tower(shortest_path=True, plot_diagram=True)
-Q.get_metrics()
+[shortest_path_a, adjacency_matrix_a, incidence_matrix_a, eig_cent_sorted_a, eulerian_a] = Q.get_metrics()
+# print(eulerian_a)
+
