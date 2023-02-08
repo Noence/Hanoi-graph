@@ -6,15 +6,15 @@ import pandas as pd
 
 
 class HanoiTower:
-    def __init__(self, disks, towers, start, end):
+    def __init__(self, disks, towers):
         self.disks = disks
         self.towers = towers
         self.nums = []
         self.disk_names = self.disk_names()
         self.nodes = product(self.nums, repeat=len(self.disk_names))
         self.graph = nx.Graph()
-        self.start = start
-        self.end = end
+        self.start = ''
+        self.end = ''
         self.diff = []
         self.idx = []
         self.node_color_map = []
@@ -40,7 +40,9 @@ class HanoiTower:
                 self.diff.append(j)
                 self.idx = [a.index(i), b.index(j)]
 
-    def create_tower(self, shortest_path=True, plot_diagram=True):
+    def create_tower(self, shortest_path=True, plot_diagram=True, start='', end=''):
+        self.start = start
+        self.end = end
         if (shortest_path not in [True, False]) or (shortest_path not in [True, False]):
             raise ValueError("Options must be boolean")
         for node in self.nodes:
@@ -67,16 +69,16 @@ class HanoiTower:
         self.short_path_nodes = nx.shortest_path(self.graph, self.start, self.end)
         if plot_diagram:
             i = 0
-            while i < len(self.short_path_nodes)-1:
+            while i < len(self.short_path_nodes) - 1:
                 if i == 0:
                     self.short_path_edges.append(('start', self.short_path_nodes[i + 1]))
                     self.short_path_edges.append((self.short_path_nodes[i + 1], 'start'))
-                elif i == len(self.short_path_nodes)-2:
+                elif i == len(self.short_path_nodes) - 2:
                     self.short_path_edges.append((self.short_path_nodes[i], 'end'))
                     self.short_path_edges.append(('end', self.short_path_nodes[i]))
                 else:
                     self.short_path_edges.append((self.short_path_nodes[i], self.short_path_nodes[i + 1]))
-                    self.short_path_edges.append((self.short_path_nodes[i+1], self.short_path_nodes[i]))
+                    self.short_path_edges.append((self.short_path_nodes[i + 1], self.short_path_nodes[i]))
                 i += 1
             for node in self.short_path_nodes:
                 if node == self.end:
@@ -125,7 +127,7 @@ class HanoiTower:
         incidence_matrix = nx.incidence_matrix(self.graph).todense()
         incidence_matrix = self.cleanup_matrix(pd.DataFrame(incidence_matrix))
         eig_cent = nx.eigenvector_centrality(self.graph)
-        eig_cent_sorted = sorted(eig_cent.items(), key=lambda x:x[1], reverse=True)
+        eig_cent_sorted = sorted(eig_cent.items(), key=lambda x: x[1], reverse=True)
         eulerian = nx.is_eulerian(self.graph)
         return shortest_path, adjacency_matrix, incidence_matrix, eig_cent_sorted, eulerian
 
@@ -137,14 +139,27 @@ class HanoiTower:
         return mat_clean
 
 
-# Q = HanoiTower(6, 3, '111111', '333333')
-# Q = HanoiTower(3, 3, '111', '333')
-# Q = HanoiTower(3, 4, '111', '444')
-# Q = HanoiTower(6, 4, '133122', '333333')
-Q = HanoiTower(6, 3, '133122', '333333')
+## Q2
+# Q = HanoiTower(3, 3)
+# Q.create_tower(shortest_path=True, plot_diagram=True, start='111', end='333')
 
+## Q3
+# Q = HanoiTower(6, 3)
+# Q.create_tower(shortest_path=True, plot_diagram=True, start='111111', end='333333')
 
-Q.create_tower(shortest_path=True, plot_diagram=True)
+## Q4
+# Q = HanoiTower(3, 4)
+# Q.create_tower(shortest_path=True, plot_diagram=True, start='111', end='444')
+
+## Q5
+# Q = HanoiTower(6, 4)
+# Q.create_tower(shortest_path=True, plot_diagram=True, start='133122', end='333333')
+
+# Q = HanoiTower(6, 3)
+# Q.create_tower(shortest_path=True, plot_diagram=True, start='133122', end='333333')
+
+## Q6
+Q = HanoiTower(3, 3)
+Q.create_tower(shortest_path=True, plot_diagram=True, start='111', end='333')
 [shortest_path_a, adjacency_matrix_a, incidence_matrix_a, eig_cent_sorted_a, eulerian_a] = Q.get_metrics()
-# print(eulerian_a)
-
+print(eig_cent_sorted_a)
