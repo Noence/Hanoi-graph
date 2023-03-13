@@ -98,6 +98,7 @@ class HanoiTower:
 
     def plot_tower(self):
         size = 400
+        fig = plt.figure()
         if self.disks == 6:
             fig = plt.figure(1, figsize=(50, 50), dpi=60)
             size = 700
@@ -118,7 +119,8 @@ class HanoiTower:
         nx.draw(self.graph, pos, with_labels=False, node_color="grey", edge_color="grey", node_size=size)
         nx.draw(self.graph, pos, nodelist=self.short_path_nodes, node_color=self.node_color_map,
                 edgelist=self.short_path_edges, edge_color="green", width=3, node_size=size)
-        plt.show()
+        # plt.show()
+        return fig
 
     def get_metrics(self):
         shortest_path = len(self.short_path_nodes)
@@ -159,7 +161,7 @@ class HanoiTower:
 # Q.create_tower(shortest_path=True, plot_diagram=True, start='133122', end='333333')
 
 ## Q6
-Q = HanoiTower(3, 3)
-Q.create_tower(shortest_path=True, plot_diagram=True, start='111', end='333')
-[shortest_path_a, adjacency_matrix_a, incidence_matrix_a, eig_cent_sorted_a, eulerian_a] = Q.get_metrics()
-print(eig_cent_sorted_a)
+# Q = HanoiTower(3, 3)
+# Q.create_tower(shortest_path=True, plot_diagram=True, start='111', end='333')
+# [shortest_path_a, adjacency_matrix_a, incidence_matrix_a, eig_cent_sorted_a, eulerian_a] = Q.get_metrics()
+# print(eig_cent_sorted_a)
