@@ -6,7 +6,7 @@ import pandas as pd
 
 
 class HanoiTower:
-    def __init__(self, disks, towers):
+    def __init__(self, disks, towers, layout):
         self.disks = disks
         self.towers = towers
         self.nums = []
@@ -22,6 +22,7 @@ class HanoiTower:
         self.edge_width = []
         self.short_path_edges = []
         self.short_path_nodes = []
+        self.layout = layout
 
     def disk_names(self):
         names = ''.join(map(str, list(range(1, self.disks + 1))))
@@ -98,18 +99,35 @@ class HanoiTower:
 
     def plot_tower(self):
         size = 400
-        fig = plt.figure()
-        if self.disks == 6:
-            fig = plt.figure(1, figsize=(50, 50), dpi=60)
-            size = 700
-            print("CREATING GRAPH...")
+        fig, ax = plt.subplots()
+        # if self.disks == 6:
+        #     fig = plt.figure(1, figsize=(50, 50), dpi=60)
+        #     size = 700
+        #     print("CREATING GRAPH...")
+        #     pos = nx.kamada_kawai_layout(self.graph)
+        # elif self.towers == 4:
+        #     fig = plt.figure(1, figsize=(15, 15), dpi=60)
+        #     size = 600
+        #     pos = nx.circular_layout(self.graph)
+        # else:
+        if self.layout == "kamada-kawai":
             pos = nx.kamada_kawai_layout(self.graph)
-        elif self.towers == 4:
-            fig = plt.figure(1, figsize=(15, 15), dpi=60)
-            size = 600
+        elif self.layout == "circular":
             pos = nx.circular_layout(self.graph)
+        elif self.layout == "planar":
+            pos = nx.planar_layout(self.graph)
+        elif self.layout == "shell":
+            pos = nx.shell_layout(self.graph)
+        elif self.layout == "spring":
+            pos = nx.spring_layout(self.graph)
+        elif self.layout == "spectral":
+            pos = nx.spectral_layout(self.graph)
+        elif self.layout == "spiral":
+            pos = nx.spiral_layout(self.graph)
         else:
-            pos = nx.kamada_kawai_layout(self.graph)
+            pos = nx.random_layout(self.graph)
+
+
         nx.draw_networkx_labels(
             self.graph,
             pos,
