@@ -46,8 +46,8 @@ with col2:
 
     st.pyplot(hanoi_plot)
 
+    path = hanoi_tower.get_shortest_path()
 
-
-
-
+with subcol1: st.write(f"""Number of Shortest Paths \n ## {hanoi_tower.num_short_paths}""")
+with subcol2: st.write(f"""Shortest Path Length (number of nodes) \n ## {path}""")
 

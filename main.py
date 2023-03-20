@@ -9,6 +9,7 @@ class HanoiTower:
     def __init__(self, disks, towers, layout):
         self.disks = disks
         self.towers = towers
+        self.num_short_paths = 1
         self.nums = []
         self.disk_names = self.disk_names()
         self.nodes = product(self.nums, repeat=len(self.disk_names))
@@ -68,6 +69,7 @@ class HanoiTower:
 
     def find_shortest_path(self, plot_diagram=True):
         self.short_path_nodes = nx.shortest_path(self.graph, self.start, self.end)
+        self.num_short_paths = len(list(nx.all_shortest_paths(self.graph, self.start, self.end)))
         if plot_diagram:
             i = 0
             while i < len(self.short_path_nodes) - 1:
@@ -98,13 +100,13 @@ class HanoiTower:
             self.plot_tower()
 
     def plot_tower(self):
-        size = 400
+        size = 50
         fig, ax = plt.subplots()
-        # if self.disks == 6:
+        # if self.disks == 6 or self.disks == 7:
         #     fig = plt.figure(1, figsize=(50, 50), dpi=60)
-        #     size = 700
-        #     print("CREATING GRAPH...")
-        #     pos = nx.kamada_kawai_layout(self.graph)
+        #     # size = 700
+        # #     print("CREATING GRAPH...")
+        # #     pos = nx.kamada_kawai_layout(self.graph)
         # elif self.towers == 4:
         #     fig = plt.figure(1, figsize=(15, 15), dpi=60)
         #     size = 600
@@ -131,17 +133,17 @@ class HanoiTower:
         nx.draw_networkx_labels(
             self.graph,
             pos,
-            font_size=8,
+            font_size=3.5,
             font_family="sans-serif",
         )
         nx.draw(self.graph, pos, with_labels=False, node_color="grey", edge_color="grey", node_size=size)
         nx.draw(self.graph, pos, nodelist=self.short_path_nodes, node_color=self.node_color_map,
-                edgelist=self.short_path_edges, edge_color="green", width=3, node_size=size)
+                edgelist=self.short_path_edges, edge_color="green", width=2, node_size=size)
         # plt.show()
         return fig
 
     def get_metrics(self):
-        shortest_path = len(self.short_path_nodes)
+        shortest_path = self.get_shortest_path()
         adjacency_matrix = nx.to_pandas_adjacency(self.graph)
         adjacency_matrix = self.cleanup_matrix(adjacency_matrix)
         incidence_matrix = nx.incidence_matrix(self.graph).todense()
@@ -150,6 +152,10 @@ class HanoiTower:
         eig_cent_sorted = sorted(eig_cent.items(), key=lambda x: x[1], reverse=True)
         eulerian = nx.is_eulerian(self.graph)
         return shortest_path, adjacency_matrix, incidence_matrix, eig_cent_sorted, eulerian
+
+    def get_shortest_path(self):
+        shortest_path = len(self.short_path_nodes)
+        return shortest_path
 
     def cleanup_matrix(self, mat):
         mat_clean = mat.replace([0.0], '0', regex=True)
